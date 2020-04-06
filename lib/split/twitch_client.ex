@@ -30,8 +30,23 @@ defmodule Split.TwitchClient do
   end
 
   def handle_frame({_type, msg}, state) do
-    {:ok, _message} = ChatMessage.parse(msg)
+    {:ok, message} = ChatMessage.parse(msg)
+
+    case message do
+      %{type: "PRIVMSG"} -> show_message_bucket(message)
+      _ -> false
+    end
+
     {:ok, state}
+  end
+
+  def show_message_bucket(%{tags: tags, content: content}) do
+    id = tags["id"]
+
+    <<_::binary-size(8), hash::unsigned-little-integer-size(64)>> = :erlang.md5(id)
+    bucket = Kernel.rem(hash, 32)
+
+    IO.inspect(%{id: id, hash: hash, bucket: bucket, content: content})
   end
 
   defp _send(pid, message) do

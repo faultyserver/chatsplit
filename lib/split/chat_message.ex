@@ -12,13 +12,9 @@ defmodule Split.ChatMessage do
   #
   #   @tags :sender TYPE #channel :content
   def parse("@" <> tagged_message) do
-    IO.puts("parsing tagged message")
-
     parts =
       tagged_message
       |> String.split(" ", parts: 5)
-
-    IO.inspect(parts)
 
     [tags, sender, type, channel, content] = parts
 
@@ -30,13 +26,10 @@ defmodule Split.ChatMessage do
       content: parse_content(content)
     }
 
-    IO.inspect(message)
-
     {:ok, message}
   end
 
   def parse(message) do
-    IO.puts(message)
     {:ok, message}
   end
 
